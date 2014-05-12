@@ -47,3 +47,7 @@ chmod o-rx /etc/hosts.allow.d
         include fastcgi_params;
     }
 ```
+
+## Resources
+
+* [個人サーバのファイアウォールを活かしつつ、どこからでもログインする方法 (CGI編)](http://d.hatena.ne.jp/kazuhooku/20131126/1385483337)
