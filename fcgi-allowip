@@ -1,0 +1,59 @@
+#! /bin/sh
+#
+# fcgi-allowip
+#
+# chkconfig: 2345 90 10
+# description: fcgi allow ip service process
+# pidfile: /var/run/fcgi-allowip.pid
+# author: d6rkaiz
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+PIDFILE=/var/run/fcgi-allowip.pid
+SOCKFILE=/var/run/fcgi-allowip.sock
+LOCKFILE=/var/lock/subsys/fcgi-allowip
+SCRIPTS=/usr/local/allowip/update_addr.rb
+USER=nginx
+GROUP=nginx
+RETVAL=0
+
+# See how we were called.
+case "$1" in
+  start)
+    echo -n "Starting Allow IP fcgi: "
+        /usr/bin/spawn-fcgi -s ${SOCKFILE} -U ${USER} -u ${USER} -g ${GROUP} ${SCRIPTS} -P ${PIDFILE}
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ]
+    then
+        echo_success
+        touch ${LOCKFILE}
+    else
+        echo_failure
+    fi
+    echo
+    ;;
+  stop)
+    echo -n "Stopping fcgi-allowip: "
+    kill $(cat ${PIDFILE})
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ]
+    then
+        echo_success
+        rm -f ${LOCKFILE}
+    else
+        echo_failure
+    fi
+    echo
+    ;;
+  restart|reload)
+    $0 stop
+    $0 start
+    RETVAL=$?
+    ;;
+  *)
+    echo "Usage: fcgi-allowip {start|stop|restart}"
+    exit 1
+esac
+
+exit $RETVAL
